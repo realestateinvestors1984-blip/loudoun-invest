@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Investor Dashboard | Loudoun Invest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body{
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      background:#f4f6f9;
+      color:#111;
+    }
+    nav{
+      background:#0f172a;
+      color:#fff;
+      padding:15px 30px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    nav a{
+      color:#fff;
+      text-decoration:none;
+      margin-left:18px;
+      font-weight:500;
+    }
+    header{
+      background:#020617;
+      color:#fff;
+      padding:60px 20px;
+    }
+    section{
+      max-width:1200px;
+      margin:auto;
+      padding:40px 20px;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:25px;
+      margin-bottom:40px;
+    }
+    .stat{
+      background:#fff;
+      padding:25px;
+      border-radius:18px;
+      box-shadow:0 15px 30px rgba(0,0,0,.1);
+    }
+    .stat strong{
+      display:block;
+      font-size:1.4rem;
+      color:#0f172a;
+    }
+    .card{
+      background:#fff;
+      padding:30px;
+      border-radius:20px;
+      box-shadow:0 20px 40px rgba(0,0,0,.1);
+      margin-bottom:30px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+    th, td{
+      padding:14px;
+      border-bottom:1px solid #ddd;
+      text-align:left;
+    }
+    th{
+      background:#f1f5f9;
+    }
+    .status{
+      padding:6px 14px;
+      border-radius:20px;
+      font-size:.85rem;
+    }
+    .pending{background:#fff3cd;color:#856404;}
+    .approved{background:#d1e7dd;color:#0f5132;}
+    .btn{
+      background:#d4af37;
+      color:#111;
+      padding:12px 22px;
+      border-radius:25px;
+      text-decoration:none;
+      font-weight:600;
+      display:inline-block;
+      margin-top:15px;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <strong style="color:#d4af37;">Loudoun Invest</strong>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="properties.html">Properties</a>
+    <a href="consultation.html">Support</a>
+  </div>
+</nav>
+
+<header>
+  <h1>Welcome, Investor</h1>
+  <p>Monitor your portfolio, performance, and compliance status.</p>
+</header>
+
+<section>
+
+  <div class="stats">
+    <div class="stat">
+      <strong>$45,000</strong>
+      Total Invested
+    </div>
+    <div class="stat">
+      <strong>$5,400</strong>
+      Total Returns
+    </div>
+    <div class="stat">
+      <strong>3</strong>
+      Active Investments
+    </div>
+    <div class="stat">
+      <strong class="status pending">Pending</strong>
+      KYC Status
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Active Investments</h2>
+    <table>
+      <tr>
+        <th>Property</th>
+        <th>Amount</th>
+        <th>ROI</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Luxury Family Residence</td>
+        <td>$20,000</td>
+        <td>12%</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>Office & Retail Complex</td>
+        <td>$15,000</td>
+        <td>15%</td>
+        <td>Active</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Account Verification</h2>
+    <p>
+      Identity verification (KYC) is required before fund disbursement.
+      Please upload the necessary documents to complete verification.
+    </p>
+    <a class="btn" href="consultation.html">Submit Documents</a>
+  </div>
+
+  <div class="card">
+    <h2>Recent Activity</h2>
+    <ul>
+      <li>Investment confirmed – $20,000</li>
+      <li>Quarterly return credited – $1,200</li>
+      <li>KYC review initiated</li>
+    </ul>
+  </div>
+
+</section>
+
+</body>
+</html>
+
+  
