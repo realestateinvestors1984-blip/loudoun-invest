@@ -1,133 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account | Loudoun Invest</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Create Investor Account | Loudoun Invest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body{
-      margin:0;
-      font-family:'Poppins',sans-serif;
-      background:#f5f6f8;
-      color:#111;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    nav{
-      background:#0f172a;
-      color:#fff;
-      padding:15px 30px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+
+    .container {
+      background: white;
+      padding: 40px;
+      width: 350px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-    nav a{
-      color:#fff;
-      text-decoration:none;
-      margin-left:18px;
-      font-weight:500;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0f172a;
     }
-    header{
-      background:#020617;
-      color:#fff;
-      padding:80px 20px;
-      text-align:center;
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
-    section{
-      max-width:900px;
-      margin:auto;
-      padding:60px 20px;
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #d4af37;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .card{
-      background:#fff;
-      padding:40px;
-      border-radius:22px;
-      box-shadow:0 20px 40px rgba(0,0,0,.1);
+
+    button:hover {
+      opacity: 0.9;
     }
-    input, select{
-      width:100%;
-      padding:14px;
-      margin-top:12px;
-      border-radius:10px;
-      border:1px solid #ccc;
-      font-family:inherit;
+
+    .link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
     }
-    .btn{
-      background:#d4af37;
-      color:#111;
-      padding:14px;
-      border:none;
-      border-radius:30px;
-      font-weight:600;
-      margin-top:20px;
-      width:100%;
-      cursor:pointer;
+
+    .link a {
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: bold;
     }
-    small{color:#555;}
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
+
 <body>
 
-<nav>
-  <strong style="color:#d4af37;">Loudoun Invest</strong>
-  <div>
-    <a href="index.html">Home</a>
-    <a href="login.html">Login</a>
+<div class="container">
+  <h2>Create Investor Account</h2>
+
+  <div id="errorMessage" class="error"></div>
+
+  <form id="registerForm">
+    <input type="email" id="email" placeholder="Email address" required>
+    <input type="password" id="password" placeholder="Password (min 6 characters)" required>
+    <button type="submit">Create Account</button>
+  </form>
+
+  <div class="link">
+    Already have an account? <a href="login.html">Login</a>
   </div>
-</nav>
+</div>
 
-<header>
-  <h1>Create Your Investor Account</h1>
-  <p>Register to access exclusive real estate investment opportunities.</p>
-</header>
+<script type="module">
+  import { auth } from "./firebase.js";
+  import { createUserWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-<section>
-  <div class="card">
+  const form = document.getElementById("registerForm");
+  const errorMessage = document.getElementById("errorMessage");
 
-    <form action="mailto:realestateinvestors1984@gmail.com" method="POST" enctype="text/plain">
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      <label>Full Legal Name</label>
-      <input type="text" name="fullname" required>
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-      <label>Email Address</label>
-      <input type="email" name="email" required>
+    errorMessage.textContent = "";
 
-      <label>Phone Number</label>
-      <input type="tel" name="phone" required>
-
-      <label>Country of Residence</label>
-      <input type="text" name="country" required>
-
-      <label>Investor Type</label>
-      <select name="investor_type">
-        <option>Individual Investor</option>
-        <option>Joint Investor</option>
-        <option>Corporate / Institutional</option>
-      </select>
-
-      <label>Create Password</label>
-      <input type="password" required>
-
-      <label>Confirm Password</label>
-      <input type="password" required>
-
-      <button class="btn" type="submit">Create Account</button>
-
-      <small>
-        By creating an account, you agree to our terms and acknowledge that
-        identity verification (KYC) will be required before investing.
-      </small>
-
-    </form>
-
-    <p style="text-align:center;margin-top:25px;">
-      Already registered? <a href="login.html">Login here</a>
-    </p>
-
-  </div>
-</section>
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("Account created successfully!");
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      errorMessage.textContent = error.message;
+    }
+  });
+</script>
 
 </body>
-</html>
-
-    
+  </html>
+  
