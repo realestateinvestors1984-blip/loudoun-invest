@@ -17,9 +17,9 @@
     }
 
     .container {
-      background: white;
+      background: #ffffff;
       padding: 40px;
-      width: 350px;
+      width: 360px;
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
@@ -65,10 +65,18 @@
       font-weight: bold;
     }
 
-    .error {
-      color: red;
+    .message {
       font-size: 13px;
       margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .error {
+      color: red;
+    }
+
+    .success {
+      color: green;
     }
   </style>
 </head>
@@ -78,7 +86,7 @@
 <div class="container">
   <h2>Create Investor Account</h2>
 
-  <div id="errorMessage" class="error"></div>
+  <div id="message" class="message"></div>
 
   <form id="registerForm">
     <input type="email" id="email" placeholder="Email address" required>
@@ -93,11 +101,11 @@
 
 <script type="module">
   import { auth } from "./firebase.js";
-  import { createUserWithEmailAndPassword }
+  import { createUserWithEmailAndPassword, sendEmailVerification }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const form = document.getElementById("registerForm");
-  const errorMessage = document.getElementById("errorMessage");
+  const message = document.getElementById("message");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -105,14 +113,26 @@
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    errorMessage.textContent = "";
+    message.textContent = "";
+    message.className = "message";
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created successfully!");
-      window.location.href = "dashboard.html";
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      await sendEmailVerification(userCredential.user);
+
+      message.textContent = "Account created successfully! Please check your email to verify your account before logging in.";
+      message.classList.add("success");
+
+      form.reset();
+
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 4000);
+
     } catch (error) {
-      errorMessage.textContent = error.message;
+      message.textContent = error.message;
+      message.classList.add("error");
     }
   });
 </script>
