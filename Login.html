@@ -1,121 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Investor Login | Loudoun Invest</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body{
-      margin:0;
-      font-family:'Poppins',sans-serif;
-      background:#f5f6f8;
-      color:#111;
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    nav{
-      background:#0f172a;
-      color:#fff;
-      padding:15px 30px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+
+    .container {
+      background: white;
+      padding: 40px;
+      width: 360px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-    nav a{
-      color:#fff;
-      text-decoration:none;
-      margin-left:18px;
-      font-weight:500;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0f172a;
     }
-    header{
-      background:#020617;
-      color:#fff;
-      padding:80px 20px;
-      text-align:center;
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
-    section{
-      max-width:700px;
-      margin:auto;
-      padding:60px 20px;
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #d4af37;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .card{
-      background:#fff;
-      padding:40px;
-      border-radius:22px;
-      box-shadow:0 20px 40px rgba(0,0,0,.1);
+
+    button:hover {
+      opacity: 0.9;
     }
-    input{
-      width:100%;
-      padding:14px;
-      margin-top:14px;
-      border-radius:10px;
-      border:1px solid #ccc;
-      font-family:inherit;
+
+    .link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
     }
-    .btn{
-      background:#d4af37;
-      color:#111;
-      padding:14px;
-      border:none;
-      border-radius:30px;
-      font-weight:600;
-      margin-top:25px;
-      width:100%;
-      cursor:pointer;
+
+    .link a {
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: bold;
     }
-    small{color:#555;}
+
+    .message {
+      font-size: 13px;
+      margin-bottom: 10px;
+      text-align: center;
+      color: red;
+    }
   </style>
 </head>
+
 <body>
 
-<nav>
-  <strong style="color:#d4af37;">Loudoun Invest</strong>
-  <div>
-    <a href="index.html">Home</a>
-    <a href="register.html">Register</a>
+<div class="container">
+  <h2>Investor Login</h2>
+
+  <div id="message" class="message"></div>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email address" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <div class="link">
+    Don’t have an account? <a href="register.html">Register</a>
   </div>
-</nav>
+</div>
 
-<header>
-  <h1>Investor Login</h1>
-  <p>Access your portfolio and investment dashboard.</p>
-</header>
+<script type="module">
+  import { auth } from "./firebase.js";
+  import { signInWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-<section>
-  <div class="card">
+  const form = document.getElementById("loginForm");
+  const message = document.getElementById("message");
 
-    <form action="mailto:realestateinvestors1984@gmail.com" method="POST" enctype="text/plain">
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      <label>Email Address</label>
-      <input type="email" name="email" required>
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-      <label>Password</label>
-      <input type="password" required>
+    message.textContent = "";
 
-      <button class="btn" type="submit">Login</button>
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-      <small>
-        Secure access. If you experience issues, contact support or request a consultation.
-      </small>
+      if (!user.emailVerified) {
+        message.textContent = "Please verify your email before logging in.";
+        return;
+      }
 
-    </form>
+      window.location.href = "dashboard.html";
 
-    <p style="text-align:center;margin-top:25px;">
-      New investor? <a href="register.html">Create an account</a>
-    </p>
-
-    <p style="text-align:center;margin-top:10px;">
-      <a href="consultation.html">Forgot password or need help?</a>
-    </p>
-
-    <div style="text-align:center;margin-top:30px;">
-      <a class="btn" href="dashboard.html">Go to Dashboard</a>
-    </div>
-
-  </div>
-</section>
+    } catch (error) {
+      message.textContent = "Invalid email or password.";
+    }
+  });
+</script>
 
 </body>
-</html>
-
+  </html>
   
