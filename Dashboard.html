@@ -1,86 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Investor Dashboard | Loudoun Invest</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investor Dashboard | Loudoun Investment</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9iPohB5zvOtlEeBk1AvW7t7vP0DyuqCA",
+      authDomain: "loudoun-invest.firebaseapp.com",
+      projectId: "loudoun-invest",
+      storageBucket: "loudoun-invest.firebasestorage.app",
+      messagingSenderId: "533083952366",
+      appId: "1:533083952366:web:570f34622c753a9edf4fff"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (!user.emailVerified) {
+        alert("Please verify your email before accessing dashboard.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        document.getElementById("welcomeName").innerText =
+          "Welcome, " + docSnap.data().fullName;
+      }
+
+    });
+
+    window.logoutUser = function() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    };
+  </script>
 
   <style>
     body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
+      padding: 0;
     }
 
     header {
-      background: #0f172a;
-      color: white;
-      padding: 15px 30px;
+      background: #1e293b;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     button {
-      background: #d4af37;
+      background: gold;
       border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
+      padding: 10px 15px;
       font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
     }
 
     .container {
-      padding: 30px;
+      padding: 40px;
     }
 
     .card {
-      background: white;
+      background: #1e293b;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       margin-bottom: 20px;
+      border-radius: 10px;
     }
   </style>
 </head>
 
 <body>
 
-<header>
-  <h3>Loudoun Invest Dashboard</h3>
-  <button id="logoutBtn">Logout</button>
-</header>
+  <header>
+    <h2 id="welcomeName">Loading...</h2>
+    <button onclick="logoutUser()">Logout</button>
+  </header>
 
-<div class="container">
-  <div class="card">
-    <h4>Welcome Investor</h4>
-    <p>Your secure dashboard is now protected.</p>
-    <p>Next step: Complete your profile and begin investing.</p>
+  <div class="container">
+
+    <div class="card">
+      <h3>Total Investment</h3>
+      <p>$0.00</p>
+    </div>
+
+    <div class="card">
+      <h3>Active Investments</h3>
+      <p>0</p>
+    </div>
+
+    <div class="card">
+      <h3>Portfolio Performance</h3>
+      <p>0% ROI</p>
+    </div>
+
   </div>
-</div>
-
-<script type="module">
-  import { auth } from "./firebase.js";
-  import { onAuthStateChanged, signOut }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-    } else if (!user.emailVerified) {
-      alert("Please verify your email before accessing the dashboard.");
-      window.location.href = "login.html";
-    }
-  });
-
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "login.html";
-  });
-</script>
 
 </body>
-    </html>
+  </html>
   
