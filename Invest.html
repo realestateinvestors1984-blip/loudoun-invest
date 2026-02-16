@@ -1,122 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+  <title>Invest | Loudoun Investment</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Invest Now | Loudoun Invest</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9iPohB5zvOtlEeBk1AvW7t7vP0DyuqCA",
+      authDomain: "loudoun-invest.firebaseapp.com",
+      projectId: "loudoun-invest",
+      storageBucket: "loudoun-invest.firebasestorage.app",
+      messagingSenderId: "533083952366",
+      appId: "1:533083952366:web:570f34622c753a9edf4fff"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else if (!user.emailVerified) {
+        alert("Please verify your email before investing.");
+        window.location.href = "dashboard.html";
+      } else {
+        currentUser = user;
+      }
+    });
+
+    window.makeInvestment = async function() {
+      const property = document.getElementById("property").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      if (!property || !amount || amount <= 0) {
+        alert("Please enter valid investment details.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "investments"), {
+          userId: currentUser.uid,
+          propertyName: property,
+          amount: amount,
+          createdAt: serverTimestamp()
+        });
+
+        alert("Investment successful!");
+        window.location.href = "dashboard.html";
+
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  </script>
 
   <style>
-    body{
-      margin:0;
-      font-family:'Poppins',sans-serif;
-      background:#f5f6f8;
-      color:#111;
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    nav{
-      background:#0f172a;
-      color:#fff;
-      padding:15px 30px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+
+    .container {
+      background: #1e293b;
+      padding: 40px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
     }
-    nav a{
-      color:#fff;
-      text-decoration:none;
-      margin-left:18px;
-      font-weight:500;
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
     }
-    header{
-      background:#020617;
-      color:#fff;
-      padding:80px 20px;
-      text-align:center;
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: gold;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    section{
-      max-width:900px;
-      margin:auto;
-      padding:60px 20px;
+
+    button:hover {
+      background: orange;
     }
-    .card{
-      background:#fff;
-      padding:40px;
-      border-radius:22px;
-      box-shadow:0 20px 40px rgba(0,0,0,.1);
-    }
-    input{
-      width:100%;
-      padding:14px;
-      margin-top:14px;
-      border-radius:10px;
-      border:1px solid #ccc;
-      font-family:inherit;
-    }
-    .summary{
-      background:#f1f5f9;
-      padding:20px;
-      border-radius:15px;
-      margin-top:20px;
-    }
-    .btn{
-      background:#d4af37;
-      color:#111;
-      padding:14px;
-      border:none;
-      border-radius:30px;
-      font-weight:600;
-      margin-top:25px;
-      width:100%;
-      cursor:pointer;
-    }
-    small{color:#555;}
   </style>
 </head>
+
 <body>
 
-<nav>
-  <strong style="color:#d4af37;">Loudoun Invest</strong>
-  <div>
-    <a href="index.html">Home</a>
-    <a href="properties.html">Properties</a>
-    <a href="dashboard.html">Dashboard</a>
+  <div class="container">
+    <h2>Make an Investment</h2>
+
+    <select id="property">
+      <option value="">Select Property</option>
+      <option value="Loudoun Luxury Villas">Loudoun Luxury Villas</option>
+      <option value="Downtown Commercial Plaza">Downtown Commercial Plaza</option>
+      <option value="Waterfront Apartments">Waterfront Apartments</option>
+      <option value="Suburban Family Estates">Suburban Family Estates</option>
+    </select>
+
+    <input type="number" id="amount" placeholder="Investment Amount (USD)" />
+
+    <button onclick="makeInvestment()">Invest Now</button>
   </div>
-</nav>
-
-<header>
-  <h1>Confirm Your Investment</h1>
-  <p>Select your investment amount and review expected returns.</p>
-</header>
-
-<section>
-  <div class="card">
-
-    <label>Investment Amount ($)</label>
-    <input type="number" placeholder="Minimum $10,000">
-
-    <div class="summary">
-      <p><strong>Projected Annual ROI:</strong> 12%</p>
-      <p><strong>Estimated Annual Earnings:</strong> Calculated after confirmation</p>
-      <p><strong>Investment Term:</strong> 5 Years</p>
-      <p><strong>Payout Frequency:</strong> Quarterly</p>
-    </div>
-
-    <button class="btn">Confirm Investment</button>
-
-    <small>
-      Funds transfer instructions and verification steps will be provided
-      after confirmation and KYC approval.
-    </small>
-
-    <div style="text-align:center;margin-top:30px;">
-      <p>Need assistance before proceeding?</p>
-      <a class="btn" href="consultation.html">Speak with an Advisor</a>
-    </div>
-
-  </div>
-</section>
 
 </body>
-</html>
-
+  </html>
   
