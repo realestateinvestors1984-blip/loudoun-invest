@@ -8,7 +8,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB9iPohB5zvOtlEeBk1AvW7t7vP0DyuqCA",
@@ -23,6 +23,13 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(amount);
+    }
+
     onAuthStateChanged(auth, async (user) => {
 
       if (!user) {
@@ -36,13 +43,39 @@
         return;
       }
 
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
+      // Load user profile
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
         document.getElementById("welcomeName").innerText =
-          "Welcome, " + docSnap.data().fullName;
+          "Welcome, " + userDoc.data().fullName;
       }
+
+      // Load investments
+      const q = query(
+        collection(db, "investments"),
+        where("userId", "==", user.uid)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      let totalInvestment = 0;
+      let investmentCount = 0;
+
+      querySnapshot.forEach((doc) => {
+        totalInvestment += doc.data().amount;
+        investmentCount++;
+      });
+
+      document.getElementById("totalInvestment").innerText =
+        formatCurrency(totalInvestment);
+
+      document.getElementById("activeInvestments").innerText =
+        investmentCount;
+
+      // Simple ROI simulation (example: 12% annual return)
+      const roi = totalInvestment * 0.12;
+      document.getElementById("roi").innerText =
+        formatCurrency(roi);
 
     });
 
@@ -59,7 +92,6 @@
       background: #0f172a;
       color: white;
       margin: 0;
-      padding: 0;
     }
 
     header {
@@ -103,17 +135,17 @@
 
     <div class="card">
       <h3>Total Investment</h3>
-      <p>$0.00</p>
+      <p id="totalInvestment">$0.00</p>
     </div>
 
     <div class="card">
       <h3>Active Investments</h3>
-      <p>0</p>
+      <p id="activeInvestments">0</p>
     </div>
 
     <div class="card">
-      <h3>Portfolio Performance</h3>
-      <p>0% ROI</p>
+      <h3>Estimated Annual Return (12%)</h3>
+      <p id="roi">$0.00</p>
     </div>
 
   </div>
