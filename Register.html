@@ -1,15 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Create Investor Account | Loudoun Invest</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Loudoun Investment</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <script type="module">
+    // Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // 🔐 Your Firebase Config (DO NOT CHANGE)
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9iPohB5zvOtlEeBk1AvW7t7vP0DyuqCA",
+      authDomain: "loudoun-invest.firebaseapp.com",
+      projectId: "loudoun-invest",
+      storageBucket: "loudoun-invest.firebasestorage.app",
+      messagingSenderId: "533083952366",
+      appId: "1:533083952366:web:570f34622c753a9edf4fff"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Register Function
+    window.registerUser = async function() {
+      const fullName = document.getElementById("fullName").value;
+      const phone = document.getElementById("phone").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (!fullName || !phone || !email || !password) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Send verification email
+        await sendEmailVerification(user);
+
+        // Save user profile to Firestore
+        await setDoc(doc(db, "users", user.uid), {
+          fullName: fullName,
+          phone: phone,
+          email: email,
+          createdAt: serverTimestamp(),
+          verified: false
+        });
+
+        alert("Account created successfully! Please check your email to verify your account.");
+        window.location.href = "login.html";
+
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+  </script>
 
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: #0f172a;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -17,126 +74,59 @@
     }
 
     .container {
-      background: #ffffff;
+      background: #1e293b;
       padding: 40px;
-      width: 360px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #0f172a;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
     }
 
     input {
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
     }
 
     button {
       width: 100%;
       padding: 12px;
-      background: #d4af37;
+      background: gold;
       border: none;
-      border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      border-radius: 5px;
     }
 
     button:hover {
-      opacity: 0.9;
+      background: orange;
     }
 
-    .link {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 14px;
-    }
-
-    .link a {
-      color: #0f172a;
+    a {
+      color: gold;
       text-decoration: none;
-      font-weight: bold;
-    }
-
-    .message {
-      font-size: 13px;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    .error {
-      color: red;
-    }
-
-    .success {
-      color: green;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h2>Create Investor Account</h2>
+  <div class="container">
+    <h2>Create Investor Account</h2>
 
-  <div id="message" class="message"></div>
+    <input type="text" id="fullName" placeholder="Full Name" />
+    <input type="text" id="phone" placeholder="Phone Number" />
+    <input type="email" id="email" placeholder="Email Address" />
+    <input type="password" id="password" placeholder="Password" />
 
-  <form id="registerForm">
-    <input type="email" id="email" placeholder="Email address" required>
-    <input type="password" id="password" placeholder="Password (min 6 characters)" required>
-    <button type="submit">Create Account</button>
-  </form>
+    <button onclick="registerUser()">Register</button>
 
-  <div class="link">
-    Already have an account? <a href="login.html">Login</a>
+    <p style="margin-top:15px;">
+      Already have an account?
+      <a href="login.html">Login here</a>
+    </p>
   </div>
-</div>
-
-<script type="module">
-  import { auth } from "./firebase.js";
-  import { createUserWithEmailAndPassword, sendEmailVerification }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-  const form = document.getElementById("registerForm");
-  const message = document.getElementById("message");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    message.textContent = "";
-    message.className = "message";
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-      await sendEmailVerification(userCredential.user);
-
-      message.textContent = "Account created successfully! Please check your email to verify your account before logging in.";
-      message.classList.add("success");
-
-      form.reset();
-
-      setTimeout(() => {
-        window.location.href = "login.html";
-      }, 4000);
-
-    } catch (error) {
-      message.textContent = error.message;
-      message.classList.add("error");
-    }
-  });
-</script>
 
 </body>
-  </html>
-  
+</html>
