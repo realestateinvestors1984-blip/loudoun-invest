@@ -43,14 +43,12 @@
         return;
       }
 
-      // Load user profile
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         document.getElementById("welcomeName").innerText =
           "Welcome, " + userDoc.data().fullName;
       }
 
-      // Load investments
       const q = query(
         collection(db, "investments"),
         where("userId", "==", user.uid)
@@ -61,9 +59,23 @@
       let totalInvestment = 0;
       let investmentCount = 0;
 
+      const tableBody = document.getElementById("investmentTableBody");
+      tableBody.innerHTML = "";
+
       querySnapshot.forEach((doc) => {
-        totalInvestment += doc.data().amount;
+        const data = doc.data();
+        totalInvestment += data.amount;
         investmentCount++;
+
+        const row = `
+          <tr>
+            <td>${data.propertyName}</td>
+            <td>${formatCurrency(data.amount)}</td>
+            <td>${data.createdAt?.toDate().toLocaleDateString() || "-"}</td>
+            <td>Active</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
       });
 
       document.getElementById("totalInvestment").innerText =
@@ -72,11 +84,9 @@
       document.getElementById("activeInvestments").innerText =
         investmentCount;
 
-      // Simple ROI simulation (example: 12% annual return)
       const roi = totalInvestment * 0.12;
       document.getElementById("roi").innerText =
         formatCurrency(roi);
-
     });
 
     window.logoutUser = function() {
@@ -121,6 +131,22 @@
       margin-bottom: 20px;
       border-radius: 10px;
     }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #334155;
+    }
+
+    th {
+      background: #1e293b;
+    }
   </style>
 </head>
 
@@ -146,6 +172,22 @@
     <div class="card">
       <h3>Estimated Annual Return (12%)</h3>
       <p id="roi">$0.00</p>
+    </div>
+
+    <div class="card">
+      <h3>Investment History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="investmentTableBody">
+        </tbody>
+      </table>
     </div>
 
   </div>
